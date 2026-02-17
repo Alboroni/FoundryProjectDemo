@@ -1,4 +1,5 @@
 // Hub module - deploys central AI Foundry Hub and AI Services
+// This module contains shared resources used by all projects
 param location string
 param foundryName string
 param hubName string
