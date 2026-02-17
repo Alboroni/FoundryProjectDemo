@@ -22,6 +22,9 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
 resource hub 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: hubName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     friendlyName: 'Foundry Hub'
     description: 'Central AI Foundry Hub for all projects'

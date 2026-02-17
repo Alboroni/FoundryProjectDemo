@@ -39,6 +39,9 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 resource project 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: projectName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     friendlyName: 'Sandbox Project'
     description: 'Project workspace linked to central hub'
