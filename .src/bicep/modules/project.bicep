@@ -8,6 +8,30 @@ param apimName string
 param subscriptionKey string
 param secretName string
 
+// Storage Account (required for project)
+resource projectStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: replace('${projectName}storage', '-', '')
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    encryption: {
+      services: {
+        blob: {
+          enabled: true
+        }
+        file: {
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+    supportsHttpsTrafficOnly: true
+  }
+}
+
 // Key Vault to store the subscription key (project-specific)
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
@@ -35,6 +59,18 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
+// Application Insights (required for project)
+resource projectAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${projectName}-ai'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+  }
+}
+
 // AI Foundry Project (references central hub)
 resource project 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: projectName
@@ -46,6 +82,9 @@ resource project 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
     friendlyName: 'Sandbox Project'
     description: 'Project workspace linked to central hub'
     hubResourceId: hubResourceId
+    storageAccount: projectStorage.id
+    keyVault: keyVault.id
+    applicationInsights: projectAppInsights.id
     publicNetworkAccess: 'Enabled'
   }
 }
