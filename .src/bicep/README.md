@@ -4,12 +4,11 @@ This Bicep template creates an Azure AI Foundry project with secure subscription
 
 ## Resources Created
 
-- **Key Vault**: Stores the APIM subscription key securely
+- **Key Vault**: Stores the APIM subscription key securely (for backup/reference)
 - **AI Services Account**: Foundry AI services resource
 - **AI Foundry Hub**: The hub workspace for organizing AI projects
 - **AI Foundry Project**: A project workspace linked to the hub
-- **API Connection**: Connects to APIM using the subscription key from Key Vault
-- **RBAC Role Assignment**: Grants the project's managed identity access to Key Vault secrets
+- **API Connection**: Connects to APIM using direct API key authentication (supports cross-tenant APIM)
 
 ## Prerequisites
 
@@ -73,15 +72,21 @@ rm .apim-key.txt
 
 ## Key Features
 
+### Cross-Tenant APIM Support
+- Direct API key authentication for APIM in different Azure AD tenants
+- No managed identity required for APIM authentication
+- Subscription key passed securely as a parameter during deployment
+
 ### Secure Key Storage
-- The APIM subscription key is stored in Azure Key Vault
-- The AI Foundry project uses a system-assigned managed identity
-- RBAC role assignment grants the project "Key Vault Secrets User" access
+- The APIM subscription key is stored in Azure Key Vault for backup/reference
+- Key Vault provides audit logging and secret rotation capabilities
+- Secrets are protected with RBAC authorization
 
 ### API Connection
-- The connection resource references the Key Vault secret URI
-- No hard-coded credentials in the configuration
+- The connection uses direct API key authentication
+- Supports APIM instances in different Azure AD tenants
 - The connection can be used within the Foundry project to access your APIM backend
+- Note: The API key is stored in the connection configuration (encrypted at rest by Azure)
 
 ## Outputs
 
@@ -98,26 +103,37 @@ After deployment, the template outputs:
 1. **Never commit subscription keys to source control**
    - Add `.apim-key.txt` to `.gitignore`
    - Use Azure Key Vault or Azure DevOps Secure Files for CI/CD
+   - Pass keys as secure parameters during deployment
 
-2. **Use managed identities**
-   - All resources use system-assigned managed identities
-   - No connection strings or keys stored in application code
+2. **Use secure parameter passing**
+   - Always use `@secure()` decorator for sensitive parameters
+   - Avoid passing keys in command history (use files or prompts)
+   - Consider Azure DevOps variable groups or GitHub Secrets for automation
 
-3. **Enable RBAC for Key Vault**
-   - The template uses RBAC authorization (not access policies)
-   - Follows principle of least privilege
+3. **Key Vault for storage**
+   - Keys are stored in Key Vault for audit and rotation
+   - Enable Key Vault logging to track access
+   - Use Key Vault RBAC for granular access control
 
 4. **Review network access**
    - By default, resources have public network access enabled
    - Consider adding private endpoints for production deployments
+   - Restrict APIM subscription key scope to minimum required APIs
 
 ## Troubleshooting
 
+### Cross-Tenant APIM Access
+If the connection fails to access APIM in another tenant:
+1. Verify the APIM subscription key is valid and not expired
+2. Check the APIM instance allows the API you're trying to access
+3. Confirm the subscription key has the correct scope (product/API)
+4. Test the APIM endpoint directly with curl or Postman
+
 ### Key Vault Access Issues
-If the connection fails to access the Key Vault secret:
-1. Verify the role assignment was created successfully
-2. Check that the project's managed identity has the "Key Vault Secrets User" role
-3. Ensure Key Vault RBAC authorization is enabled
+If you can't store the key in Key Vault:
+1. Verify you have the "Key Vault Secrets Officer" or "Contributor" role
+2. Check that Key Vault RBAC authorization is enabled
+3. Ensure there are no network restrictions blocking access
 
 ### Connection Issues
 If the API connection doesn't work:

@@ -43,9 +43,6 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
     name: 'S0'
   }
   kind: 'AIServices'
-  identity: {
-    type: 'SystemAssigned'
-  }
   properties: {
     customSubDomainName: foundryName
     publicNetworkAccess: 'Enabled'
@@ -56,9 +53,6 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
 resource hub 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: hubName
   location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
   properties: {
     friendlyName: 'Sandbox Hub'
     description: 'Foundry sandbox hub'
@@ -70,9 +64,6 @@ resource hub 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
 resource project 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: projectName
   location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
   properties: {
     friendlyName: 'Sandbox Project'
     description: 'Developer sandbox project'
@@ -81,18 +72,7 @@ resource project 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   }
 }
 
-// Grant project managed identity access to Key Vault secrets
-resource projectKeyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, project.id, 'Key Vault Secrets User')
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6') // Key Vault Secrets User
-    principalId: project.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-// API connection using Key Vault reference
+// API connection using direct API key (for cross-tenant APIM access)
 resource connection 'Microsoft.MachineLearningServices/workspaces/connections@2024-10-01' = {
   parent: project
   name: 'custom-api-conn'
@@ -101,16 +81,13 @@ resource connection 'Microsoft.MachineLearningServices/workspaces/connections@20
     target: 'https://${apimName}.azure-api.net/custom'
     authType: 'ApiKey'
     credentials: {
-      key: secret.properties.secretUri
+      key: subscriptionKey
     }
     metadata: {
-      description: 'Custom API via APIM using subscription key from Key Vault'
+      description: 'Custom API via APIM (cross-tenant) using subscription key'
       apiType: 'Azure'
     }
   }
-  dependsOn: [
-    projectKeyVaultRoleAssignment
-  ]
 }
 
 output keyVaultName string = keyVault.name
