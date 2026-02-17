@@ -1,0 +1,24 @@
+# Bicep generated files
+*.bicepparam.json
+
+# Sensitive files - DO NOT COMMIT
+*.key.txt
+.apim-key.txt
+*secret*.txt
+
+# Azure deployment outputs
+deployment-output.json
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
