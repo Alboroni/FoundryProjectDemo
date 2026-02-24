@@ -1,6 +1,6 @@
 using './foundry.bicep'
 
-param location = 'uksouth'
+param location = 'swedencentral'
 param hubResourceGroupName = 'rg-foundry-hub'
 param foundryName = 'fdry-sbx-ai'
 param hubName = 'fdry-sbx-hub'
