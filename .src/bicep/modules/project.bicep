@@ -2,7 +2,6 @@
 param location string
 param projectName string
 param foundryAccountName string
-param hubResourceGroupName string
 param keyVaultName string
 param apimName string
 @secure()
@@ -42,18 +41,18 @@ resource hubAIServices 'Microsoft.CognitiveServices/accounts@2024-10-01' existin
 }
 
 // AI Foundry Project (child of AI Services account)
-resource project 'Microsoft.CognitiveServices/accounts/projects@2024-10-01' = {
+resource project 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
   parent: hubAIServices
   name: projectName
   location: location
   properties: {
-    friendlyName: 'Sandbox Project'
+    displayName: 'Sandbox Project'
     description: 'AI Foundry Project'
   }
 }
 
 // API Connection for cross-tenant APIM access
-resource connection 'Microsoft.CognitiveServices/accounts/projects/connections@2024-10-01' = {
+resource connection 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
   parent: project
   name: 'apim-connection'
   properties: {

@@ -3,7 +3,6 @@ targetScope = 'subscription'
 param location string = 'uksouth'
 param hubResourceGroupName string = 'rg-foundry-hub'
 param foundryName string = 'fdry-sbx-ai'
-param hubName string = 'fdry-sbx-hub'
 param projectName string = 'sbx-project-01'
 param keyVaultName string = 'kv-foundry-sbx'
 param apimName string
@@ -23,9 +22,7 @@ module hubResources 'modules/hub.bicep' = {
   name: 'hub-deployment'
   params: {
     location: location
-    foundryName: foundryName
-    hubName: hubName
-  }
+    foundryName: foundryName  }
 }
 
 // Deploy project resources to hub resource group (projects must be in same RG as AI Services)
@@ -36,8 +33,7 @@ module projectResources 'modules/project.bicep' = {
     location: location
     projectName: projectName
     foundryAccountName: foundryName
-    hubResourceGroupName: hubResourceGroupName
-    keyVaultName: keyVaultName
+      keyVaultName: keyVaultName
     apimName: apimName
     subscriptionKey: subscriptionKey
     secretName: secretName
@@ -47,10 +43,8 @@ module projectResources 'modules/project.bicep' = {
   ]
 }
 
-output hubResourceGroupName string = hubRg.name
+
 output foundryName string = hubResources.outputs.foundryName
-output hubName string = hubResources.outputs.hubName
-output hubId string = hubResources.outputs.hubId
 output projectName string = projectResources.outputs.projectName
 output projectId string = projectResources.outputs.projectId
 output keyVaultName string = projectResources.outputs.keyVaultName
