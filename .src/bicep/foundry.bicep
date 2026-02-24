@@ -2,7 +2,6 @@ targetScope = 'subscription'
 
 param location string = 'uksouth'
 param hubResourceGroupName string = 'rg-foundry-hub'
-param projectResourceGroupName string = 'rg-foundry-project-sbx'
 param foundryName string = 'fdry-sbx-ai'
 param hubName string = 'fdry-sbx-hub'
 param projectName string = 'sbx-project-01'
@@ -18,12 +17,6 @@ resource hubRg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   location: location
 }
 
-// Project-specific resource group
-resource projectRg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
-  name: projectResourceGroupName
-  location: location
-}
-
 // Deploy hub resources to central resource group
 module hubResources 'modules/hub.bicep' = {
   scope: hubRg
@@ -35,28 +28,31 @@ module hubResources 'modules/hub.bicep' = {
   }
 }
 
-// Deploy project resources to project-specific resource group
+// Deploy project resources to hub resource group (projects must be in same RG as AI Services)
 module projectResources 'modules/project.bicep' = {
-  scope: projectRg
+  scope: hubRg
   name: 'project-deployment'
   params: {
     location: location
     projectName: projectName
-    hubResourceId: hubResources.outputs.hubId
+    foundryAccountName: foundryName
+    hubResourceGroupName: hubResourceGroupName
     keyVaultName: keyVaultName
     apimName: apimName
     subscriptionKey: subscriptionKey
     secretName: secretName
   }
+  dependsOn: [
+    hubResources
+  ]
 }
 
 output hubResourceGroupName string = hubRg.name
-output projectResourceGroupName string = projectRg.name
 output foundryName string = hubResources.outputs.foundryName
 output hubName string = hubResources.outputs.hubName
 output hubId string = hubResources.outputs.hubId
 output projectName string = projectResources.outputs.projectName
-output projectEndpoint string = projectResources.outputs.projectEndpoint
+output projectId string = projectResources.outputs.projectId
 output keyVaultName string = projectResources.outputs.keyVaultName
 
 

@@ -76,6 +76,7 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
 resource hub 'Microsoft.MachineLearningServices/workspaces@2024-10-01' = {
   name: hubName
   location: location
+  kind: 'Hub'
   identity: {
     type: 'SystemAssigned'
   }

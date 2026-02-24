@@ -2,11 +2,10 @@ using './foundry.bicep'
 
 param location = 'uksouth'
 param hubResourceGroupName = 'rg-foundry-hub'
-param projectResourceGroupName = 'rg-foundry-project-sbx'
 param foundryName = 'fdry-sbx-ai'
 param hubName = 'fdry-sbx-hub'
 param projectName = 'sbx-project-01'
-param keyVaultName = 'kv-foundry-sbx'
+param keyVaultName = 'kv-foundry-connections'
 param apimName = 'apim-alexyoAI' // Replace with your actual APIM name
 param subscriptionKey = '6ea5b3a80b1d44d7b4b2c885a3e82e4c' // Provide this securely during deployment
 param secretName = 'apim-subscription-key'
