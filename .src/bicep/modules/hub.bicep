@@ -32,6 +32,11 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
     azCliVersion: '2.50.0'
     retentionInterval: 'PT1H'
     timeout: 'PT10M'
+    cleanupPreference: 'OnSuccess'
+    storageAccountSettings: {
+      storageAccountName: scriptStorage.name
+      storageAccountKey: scriptStorage.listKeys().keys[0].value
+    }
     scriptContent: '''
       az rest --method patch \
         --url "https://management.azure.com${ACCOUNT_ID}?api-version=2025-04-01-preview" \
@@ -43,6 +48,23 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
         value: foundry.id
       }
     ]
+  }
+  dependsOn: [
+    roleAssignment
+  ]
+}
+
+// Storage account for deployment script
+resource scriptStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: replace('${foundryName}script', '-', '')
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowSharedKeyAccess: true
+    supportsHttpsTrafficOnly: true
   }
 }
 
