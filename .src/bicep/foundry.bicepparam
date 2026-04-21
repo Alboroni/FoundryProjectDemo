@@ -2,7 +2,7 @@ using './foundry.bicep'
 
 param location = 'swedencentral'
 param hubResourceGroupName = 'rg-foundry-hubswe'
-param foundryName = 'fdry-sbx-aisalexyo'
+param foundryName = 'fdry-sbx-aialexyo'
 param projectName = 'sbx-project-01yo'
 param keyVaultName = 'kv-foundry-connsweden2'
 param apimName = 'apim-alexyoAI' // Replace with your actual APIM name
