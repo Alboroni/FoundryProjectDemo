@@ -1,7 +1,7 @@
 using './foundry.bicep'
 
 param location = 'swedencentral'
-param hubResourceGroupName = 'rg-foundry-hubsweden'
+param hubResourceGroupName = 'rg-foundry-hubswe'
 param foundryName = 'fdry-sbx-aisalexyo'
 param projectName = 'sbx-project-01yo'
 param keyVaultName = 'kv-foundry-connsweden2'

@@ -1,7 +1,6 @@
 // Project module - deploys project-specific resources (Project, Key Vault, Connections)
 param location string
 param projectName string
-param foundryAccountName string
 param keyVaultName string
 param apimName string
 @secure()
@@ -35,24 +34,22 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
-// Get reference to the hub AI Services account
-resource hubAIServices 'Microsoft.CognitiveServices/accounts@2024-10-01' existing = {
-  name: foundryAccountName
-}
-
-// AI Foundry Project (child of AI Services account)
-resource project 'Microsoft.CognitiveServices/accounts/projects@2025-04-01-preview' = {
-  parent: hubAIServices
+// AI Foundry Project (standalone)
+resource project 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   name: projectName
   location: location
+  kind: 'AIServices'
+  sku: {
+    name: 'S0'
+  }
   properties: {
-    displayName: 'Sandbox Project'
-    description: 'AI Foundry Project'
+    customSubDomainName: projectName
+    publicNetworkAccess: 'Enabled'
   }
 }
 
 // API Connection for cross-tenant APIM access
-resource connection 'Microsoft.CognitiveServices/accounts/projects/connections@2025-04-01-preview' = {
+resource connection 'Microsoft.CognitiveServices/accounts/connections@2025-04-01-preview' = {
   parent: project
   name: 'apim-connection'
   properties: {

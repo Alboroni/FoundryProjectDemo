@@ -19,7 +19,7 @@ resource hubRg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
 // Deploy hub resources to central resource group
 module hubResources 'modules/hub.bicep' = {
   scope: hubRg
-  name: 'hub-deployment'
+  name: 'AI-deployment'
   params: {
     location: location
     foundryName: foundryName  }
@@ -32,8 +32,7 @@ module projectResources 'modules/project.bicep' = {
   params: {
     location: location
     projectName: projectName
-    foundryAccountName: foundryName
-      keyVaultName: keyVaultName
+    keyVaultName: keyVaultName
     apimName: apimName
     subscriptionKey: subscriptionKey
     secretName: secretName
