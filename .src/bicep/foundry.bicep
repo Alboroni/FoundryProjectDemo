@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-param location string = 'uksouth'
+param location string = 'swedencentral'
 param hubResourceGroupName string = 'rg-foundry-hub'
 param foundryName string = 'fdry-sbx-ai'
 param projectName string = 'sbx-project-01'

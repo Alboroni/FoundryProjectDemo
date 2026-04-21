@@ -11,9 +11,43 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2025-04-01-preview' = {
     name: 'S0'
   }
   kind: 'AIServices'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     customSubDomainName: foundryName
     publicNetworkAccess: 'Enabled'
+  }
+}
+
+// Managed Identity for deployment script
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${foundryName}-script-identity'
+  location: location
+}
+
+// Storage account for deployment script
+resource scriptStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: take('st${replace(foundryName, '-', '')}scr', 24)
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowSharedKeyAccess: true
+    supportsHttpsTrafficOnly: true
+  }
+}
+
+// Role assignment to allow the script identity to modify the AI Services account
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: foundry
+  name: guid(foundry.id, managedIdentity.id, 'Contributor')
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -39,7 +73,7 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
     }
     scriptContent: '''
       az rest --method patch \
-        --url "https://management.azure.com${ACCOUNT_ID}?api-version=2025-04-01-preview" \
+        --url "${environment().resourceManager}${ACCOUNT_ID}?api-version=2025-04-01-preview" \
         --body '{"properties": {"allowProjectManagement": true}}'
     '''
     environmentVariables: [
@@ -52,37 +86,6 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
   dependsOn: [
     roleAssignment
   ]
-}
-
-// Storage account for deployment script
-resource scriptStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: replace('${foundryName}script', '-', '')
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-  properties: {
-    allowSharedKeyAccess: true
-    supportsHttpsTrafficOnly: true
-  }
-}
-
-// Managed Identity for deployment script
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${foundryName}-script-identity'
-  location: location
-}
-
-// Role assignment to allow the script identity to modify the AI Services account
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: foundry
-  name: guid(foundry.id, managedIdentity.id, 'Contributor')
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
-    principalId: managedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
 }
 
 output foundryName string = foundry.name
