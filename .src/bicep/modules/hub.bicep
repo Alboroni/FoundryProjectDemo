@@ -35,8 +35,19 @@ resource scriptStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
   kind: 'StorageV2'
   properties: {
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     supportsHttpsTrafficOnly: true
+  }
+}
+
+// Grant the managed identity Storage Blob Data Contributor role on the storage account
+resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: scriptStorage
+  name: guid(scriptStorage.id, managedIdentity.id, 'StorageBlobDataContributor')
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -67,10 +78,6 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
     retentionInterval: 'PT1H'
     timeout: 'PT10M'
     cleanupPreference: 'OnSuccess'
-    storageAccountSettings: {
-      storageAccountName: scriptStorage.name
-      storageAccountKey: scriptStorage.listKeys().keys[0].value
-    }
     scriptContent: '''
       az rest --method patch \
         --url "${environment().resourceManager}${ACCOUNT_ID}?api-version=2025-04-01-preview" \
@@ -85,6 +92,7 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
   }
   dependsOn: [
     roleAssignment
+    storageRoleAssignment
   ]
 }
 
