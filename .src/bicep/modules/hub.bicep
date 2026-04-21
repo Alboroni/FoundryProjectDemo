@@ -26,26 +26,11 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   location: location
 }
 
-// Storage account for deployment script
-resource scriptStorage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: take('st${replace(foundryName, '-', '')}scr', 24)
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
+// Grant managed identity Contributor role at resource group scope for storage provisioning
+resource rgContributorRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentity.id, 'RGContributor')
   properties: {
-    allowSharedKeyAccess: false
-    supportsHttpsTrafficOnly: true
-  }
-}
-
-// Grant the managed identity Storage Blob Data Contributor role on the storage account
-resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: scriptStorage
-  name: guid(scriptStorage.id, managedIdentity.id, 'StorageBlobDataContributor')
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
     principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
@@ -92,7 +77,7 @@ resource enableProjectManagement 'Microsoft.Resources/deploymentScripts@2023-08-
   }
   dependsOn: [
     roleAssignment
-    storageRoleAssignment
+    rgContributorRole
   ]
 }
 
