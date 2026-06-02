@@ -7,9 +7,14 @@ param apimName string
 param subscriptionKey string
 param secretName string
 
+// Generate unique Key Vault name (max 24 chars, alphanumeric and hyphens only)
+var uniqueSuffix = substring(uniqueString(resourceGroup().id, projectName), 0, 6)
+var kvBaseName = length(keyVaultName) > 17 ? substring(keyVaultName, 0, 17) : keyVaultName
+var uniqueKeyVaultName = '${kvBaseName}-${uniqueSuffix}'
+
 // Key Vault to store the subscription key (project-specific, not for workspace)
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: keyVaultName
+  name: uniqueKeyVaultName
   location: location
   properties: {
     sku: {
@@ -48,26 +53,7 @@ resource project 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   }
 }
 
-// API Connection for cross-tenant APIM access
-resource connection 'Microsoft.CognitiveServices/accounts/connections@2025-04-01-preview' = {
-  parent: project
-  name: 'apim-connection'
-  properties: {
-    category: 'CustomKeys'
-    target: 'https://${apimName}.azure-api.net'
-    authType: 'ApiKey'
-    credentials: {
-      key: subscriptionKey
-    }
-    metadata: {
-      description: 'Cross-tenant APIM connection using subscription key'
-      apiType: 'REST'
-    }
-  }
-}
-
 output projectName string = project.name
 output projectId string = project.id
-output connectionName string = connection.name
 output keyVaultName string = keyVault.name
 output keyVaultId string = keyVault.id
