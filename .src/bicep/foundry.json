@@ -1,33 +1,617 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.40.2.10011",
+      "templateHash": "10671150214411652150"
+    }
+  },
   "parameters": {
     "location": {
-      "value": "swedencentral"
+      "type": "string",
+      "defaultValue": "swedencentral"
     },
     "hubResourceGroupName": {
-      "value": "rg-foundry-hubswe"
+      "type": "string",
+      "defaultValue": "rg-foundry-hub"
     },
     "foundryName": {
-      "value": "fdry-sbx-aialexyo"
+      "type": "string",
+      "defaultValue": "fdrysbxai",
+      "minLength": 2,
+      "maxLength": 64
     },
     "projectName": {
-      "value": "sbx-project-01yo"
+      "type": "string",
+      "defaultValue": "sbx-project-01"
     },
     "storageAccountName": {
-      "value": "stfdrysbxyo001"
+      "type": "string",
+      "defaultValue": "stfdrysbxai001",
+      "minLength": 3,
+      "maxLength": 24
     },
     "appInsightsName": {
-      "value": "appi-foundry-sbx-yo"
+      "type": "string",
+      "defaultValue": "appi-foundry-sbx"
     },
     "keyVaultName": {
-      "value": "kv-foundry-connswedennew"
+      "type": "string",
+      "defaultValue": "kv-foundry-sbx"
     },
     "subscriptionKey": {
-      "value": "ec97a15bf63d4853ac784a15bb041830"
+      "type": "securestring"
     },
     "secretName": {
-      "value": "apim-subscription-key"
+      "type": "string",
+      "defaultValue": "apim-subscription-key"
+    },
+    "modelGatewayTargetUrl": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "modelGatewayName": {
+      "type": "string",
+      "defaultValue": "GatewayApi"
+    },
+    "modelGatewayAuthType": {
+      "type": "string",
+      "defaultValue": "ApiKey",
+      "allowedValues": [
+        "ApiKey",
+        "OAuth2"
+      ]
+    },
+    "modelGatewayApiKey": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "clientId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "clientSecret": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "tokenUrl": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "scopes": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "inferenceAPIVersion": {
+      "type": "string",
+      "defaultValue": "2024-02-01"
+    },
+    "deploymentInPath": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ]
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('hubResourceGroupName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "foundry-stack-deployment",
+      "resourceGroup": "[parameters('hubResourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "foundryName": {
+            "value": "[parameters('foundryName')]"
+          },
+          "projectName": {
+            "value": "[parameters('projectName')]"
+          },
+          "storageAccountName": {
+            "value": "[parameters('storageAccountName')]"
+          },
+          "appInsightsName": {
+            "value": "[parameters('appInsightsName')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "subscriptionKey": {
+            "value": "[parameters('subscriptionKey')]"
+          },
+          "secretName": {
+            "value": "[parameters('secretName')]"
+          },
+          "modelGatewayTargetUrl": {
+            "value": "[parameters('modelGatewayTargetUrl')]"
+          },
+          "modelGatewayName": {
+            "value": "[parameters('modelGatewayName')]"
+          },
+          "modelGatewayAuthType": {
+            "value": "[parameters('modelGatewayAuthType')]"
+          },
+          "modelGatewayApiKey": {
+            "value": "[parameters('modelGatewayApiKey')]"
+          },
+          "clientId": {
+            "value": "[parameters('clientId')]"
+          },
+          "clientSecret": {
+            "value": "[parameters('clientSecret')]"
+          },
+          "tokenUrl": {
+            "value": "[parameters('tokenUrl')]"
+          },
+          "scopes": {
+            "value": "[parameters('scopes')]"
+          },
+          "inferenceAPIVersion": {
+            "value": "[parameters('inferenceAPIVersion')]"
+          },
+          "deploymentInPath": {
+            "value": "[parameters('deploymentInPath')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.40.2.10011",
+              "templateHash": "2959064168844128029"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "foundryName": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 64
+            },
+            "projectName": {
+              "type": "string"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 24
+            },
+            "appInsightsName": {
+              "type": "string"
+            },
+            "keyVaultName": {
+              "type": "string"
+            },
+            "subscriptionKey": {
+              "type": "securestring"
+            },
+            "secretName": {
+              "type": "string"
+            },
+            "modelGatewayTargetUrl": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "modelGatewayName": {
+              "type": "string",
+              "defaultValue": "GatewayApi"
+            },
+            "modelGatewayAuthType": {
+              "type": "string",
+              "defaultValue": "ApiKey",
+              "allowedValues": [
+                "ApiKey",
+                "OAuth2"
+              ]
+            },
+            "modelGatewayApiKey": {
+              "type": "securestring",
+              "defaultValue": ""
+            },
+            "clientId": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "clientSecret": {
+              "type": "securestring",
+              "defaultValue": ""
+            },
+            "tokenUrl": {
+              "type": "string",
+              "defaultValue": ""
+            },
+            "scopes": {
+              "type": "array",
+              "defaultValue": []
+            },
+            "inferenceAPIVersion": {
+              "type": "string",
+              "defaultValue": "2024-02-01"
+            },
+            "deploymentInPath": {
+              "type": "string",
+              "defaultValue": "true",
+              "allowedValues": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2025-06-01",
+              "name": "[parameters('foundryName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "S0"
+              },
+              "kind": "AIServices",
+              "properties": {
+                "allowProjectManagement": true,
+                "customSubDomainName": "[parameters('foundryName')]",
+                "disableLocalAuth": false
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/projects",
+              "apiVersion": "2025-06-01",
+              "name": "[format('{0}/{1}', parameters('foundryName'), parameters('projectName'))]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('foundryName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "allowBlobPublicAccess": false,
+                "minimumTlsVersion": "TLS1_2",
+                "supportsHttpsTrafficOnly": true
+              }
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('appInsightsName')]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "IngestionMode": "ApplicationInsights"
+              }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2023-07-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "enableRbacAuthorization": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enablePurgeProtection": true,
+                "publicNetworkAccess": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2023-07-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]",
+              "properties": {
+                "value": "[parameters('subscriptionKey')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "condition": "[not(equals(parameters('modelGatewayTargetUrl'), ''))]",
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "modelgateway-connection-deployment",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "projectResourceId": {
+                    "value": "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('foundryName'), parameters('projectName'))]"
+                  },
+                  "connectionName": {
+                    "value": "[format('modelgateway-{0}', parameters('modelGatewayName'))]"
+                  },
+                  "targetUrl": {
+                    "value": "[parameters('modelGatewayTargetUrl')]"
+                  },
+                  "authType": {
+                    "value": "[parameters('modelGatewayAuthType')]"
+                  },
+                  "apiKey": {
+                    "value": "[parameters('modelGatewayApiKey')]"
+                  },
+                  "clientId": {
+                    "value": "[parameters('clientId')]"
+                  },
+                  "clientSecret": {
+                    "value": "[parameters('clientSecret')]"
+                  },
+                  "tokenUrl": {
+                    "value": "[parameters('tokenUrl')]"
+                  },
+                  "scopes": {
+                    "value": "[parameters('scopes')]"
+                  },
+                  "metadata": {
+                    "value": {
+                      "deploymentInPath": "[parameters('deploymentInPath')]",
+                      "inferenceAPIVersion": "[parameters('inferenceAPIVersion')]"
+                    }
+                  },
+                  "isSharedToAll": {
+                    "value": false
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.40.2.10011",
+                      "templateHash": "5616799134952578835"
+                    }
+                  },
+                  "parameters": {
+                    "projectResourceId": {
+                      "type": "string"
+                    },
+                    "connectionName": {
+                      "type": "string"
+                    },
+                    "targetUrl": {
+                      "type": "string"
+                    },
+                    "authType": {
+                      "type": "string",
+                      "defaultValue": "ApiKey",
+                      "allowedValues": [
+                        "ApiKey",
+                        "OAuth2"
+                      ]
+                    },
+                    "isSharedToAll": {
+                      "type": "bool",
+                      "defaultValue": false
+                    },
+                    "apiKey": {
+                      "type": "securestring",
+                      "defaultValue": ""
+                    },
+                    "clientId": {
+                      "type": "securestring",
+                      "defaultValue": ""
+                    },
+                    "clientSecret": {
+                      "type": "securestring",
+                      "defaultValue": ""
+                    },
+                    "tokenUrl": {
+                      "type": "string",
+                      "defaultValue": ""
+                    },
+                    "scopes": {
+                      "type": "array",
+                      "defaultValue": []
+                    },
+                    "metadata": {
+                      "type": "object"
+                    }
+                  },
+                  "variables": {
+                    "aiFoundryName": "[split(parameters('projectResourceId'), '/')[8]]",
+                    "projectName": "[split(parameters('projectResourceId'), '/')[10]]"
+                  },
+                  "resources": [
+                    {
+                      "condition": "[equals(parameters('authType'), 'ApiKey')]",
+                      "type": "Microsoft.CognitiveServices/accounts/projects/connections",
+                      "apiVersion": "2025-04-01-preview",
+                      "name": "[format('{0}/{1}/{2}', variables('aiFoundryName'), variables('projectName'), parameters('connectionName'))]",
+                      "properties": {
+                        "category": "ModelGateway",
+                        "target": "[parameters('targetUrl')]",
+                        "authType": "ApiKey",
+                        "isSharedToAll": "[parameters('isSharedToAll')]",
+                        "credentials": {
+                          "key": "[parameters('apiKey')]"
+                        },
+                        "metadata": "[parameters('metadata')]"
+                      }
+                    },
+                    {
+                      "condition": "[equals(parameters('authType'), 'OAuth2')]",
+                      "type": "Microsoft.CognitiveServices/accounts/projects/connections",
+                      "apiVersion": "2025-04-01-preview",
+                      "name": "[format('{0}/{1}/{2}', variables('aiFoundryName'), variables('projectName'), parameters('connectionName'))]",
+                      "properties": {
+                        "category": "ModelGateway",
+                        "target": "[parameters('targetUrl')]",
+                        "authType": "OAuth2",
+                        "isSharedToAll": "[parameters('isSharedToAll')]",
+                        "credentials": {
+                          "clientId": "[parameters('clientId')]",
+                          "clientSecret": "[parameters('clientSecret')]"
+                        },
+                        "tokenUrl": "[parameters('tokenUrl')]",
+                        "scopes": "[parameters('scopes')]",
+                        "metadata": "[parameters('metadata')]"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "connectionName": {
+                      "type": "string",
+                      "value": "[if(equals(parameters('authType'), 'ApiKey'), parameters('connectionName'), parameters('connectionName'))]"
+                    },
+                    "connectionId": {
+                      "type": "string",
+                      "value": "[if(equals(parameters('authType'), 'ApiKey'), resourceId('Microsoft.CognitiveServices/accounts/projects/connections', variables('aiFoundryName'), variables('projectName'), parameters('connectionName')), resourceId('Microsoft.CognitiveServices/accounts/projects/connections', variables('aiFoundryName'), variables('projectName'), parameters('connectionName')))]"
+                    },
+                    "targetUrl": {
+                      "type": "string",
+                      "value": "[parameters('targetUrl')]"
+                    },
+                    "authType": {
+                      "type": "string",
+                      "value": "[parameters('authType')]"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "value": "[parameters('metadata')]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('foundryName'), parameters('projectName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "foundryName": {
+              "type": "string",
+              "value": "[parameters('foundryName')]"
+            },
+            "foundryId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('foundryName'))]"
+            },
+            "projectName": {
+              "type": "string",
+              "value": "[parameters('projectName')]"
+            },
+            "projectId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts/projects', parameters('foundryName'), parameters('projectName'))]"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "value": "[parameters('storageAccountName')]"
+            },
+            "appInsightsName": {
+              "type": "string",
+              "value": "[parameters('appInsightsName')]"
+            },
+            "keyVaultName": {
+              "type": "string",
+              "value": "[parameters('keyVaultName')]"
+            },
+            "keyVaultSecretUri": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('secretName')), '2023-07-01').secretUri]"
+            },
+            "modelGatewayConnectionName": {
+              "type": "string",
+              "value": "[if(not(equals(parameters('modelGatewayTargetUrl'), '')), reference(resourceId('Microsoft.Resources/deployments', 'modelgateway-connection-deployment'), '2025-04-01').outputs.connectionName.value, '')]"
+            },
+            "modelGatewayConnectionId": {
+              "type": "string",
+              "value": "[if(not(equals(parameters('modelGatewayTargetUrl'), '')), reference(resourceId('Microsoft.Resources/deployments', 'modelgateway-connection-deployment'), '2025-04-01').outputs.connectionId.value, '')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('hubResourceGroupName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[parameters('hubResourceGroupName')]"
+    },
+    "foundryName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.foundryName.value]"
+    },
+    "foundryId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.foundryId.value]"
+    },
+    "projectName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.projectName.value]"
+    },
+    "projectId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.projectId.value]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.storageAccountName.value]"
+    },
+    "appInsightsName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.appInsightsName.value]"
+    },
+    "keyVaultName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.keyVaultName.value]"
+    },
+    "keyVaultSecretUri": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.keyVaultSecretUri.value]"
+    },
+    "modelGatewayConnectionName": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.modelGatewayConnectionName.value]"
+    },
+    "modelGatewayConnectionId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('hubResourceGroupName')), 'Microsoft.Resources/deployments', 'foundry-stack-deployment'), '2025-04-01').outputs.modelGatewayConnectionId.value]"
     }
   }
 }

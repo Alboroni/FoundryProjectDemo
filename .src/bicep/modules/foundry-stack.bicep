@@ -19,6 +19,22 @@ param keyVaultName string
 param subscriptionKey string
 param secretName string
 
+// Model Gateway connection parameters (optional)
+param modelGatewayTargetUrl string = ''
+param modelGatewayName string = 'GatewayApi'
+@allowed(['ApiKey', 'OAuth2'])
+param modelGatewayAuthType string = 'ApiKey'
+@secure()
+param modelGatewayApiKey string = ''
+param clientId string = ''
+@secure()
+param clientSecret string = ''
+param tokenUrl string = ''
+param scopes array = []
+param inferenceAPIVersion string = '2024-02-01'
+@allowed(['true', 'false'])
+param deploymentInPath string = 'true'
+
 resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
   name: foundryName
   location: location
@@ -95,6 +111,26 @@ resource kvSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   }
 }
 
+module modelGatewayConnection 'modelgateway-connection-common.bicep' = if (modelGatewayTargetUrl != '') {
+  name: 'modelgateway-connection-deployment'
+  params: {
+    projectResourceId: aiProject.id
+    connectionName: 'modelgateway-${modelGatewayName}'
+    targetUrl: modelGatewayTargetUrl
+    authType: modelGatewayAuthType
+    apiKey: modelGatewayApiKey
+    clientId: clientId
+    clientSecret: clientSecret
+    tokenUrl: tokenUrl
+    scopes: scopes
+    metadata: {
+      deploymentInPath: deploymentInPath
+      inferenceAPIVersion: inferenceAPIVersion
+    }
+    isSharedToAll: false
+  }
+}
+
 output foundryName string = aiFoundry.name
 output foundryId string = aiFoundry.id
 output projectName string = aiProject.name
@@ -103,3 +139,5 @@ output storageAccountName string = storageAccount.name
 output appInsightsName string = appInsights.name
 output keyVaultName string = keyVault.name
 output keyVaultSecretUri string = kvSecret.properties.secretUri
+output modelGatewayConnectionName string = modelGatewayTargetUrl != '' ? modelGatewayConnection!.outputs.connectionName : ''
+output modelGatewayConnectionId string = modelGatewayTargetUrl != '' ? modelGatewayConnection!.outputs.connectionId : ''

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "aiFoundryName": {
+      "value": "fdry-sbx-aialexyo2"
+    },
+    "aiProjectName": {
+      "value": "sbx-project-01yo"
+    },
+    "location": {
+      "value": "swedencentral"
+    },
+    "modelGatewayTargetUrl": {
+      "value": ""
+    },
+    "modelGatewayName": {
+      "value": "GatewayApi"
+    },
+    "modelGatewayAuthType": {
+      "value": "ApiKey"
+    },
+    "modelGatewayApiKey": {
+      "value": ""
+    },
+    "clientId": {
+      "value": ""
+    },
+    "clientSecret": {
+      "value": ""
+    },
+    "tokenUrl": {
+      "value": ""
+    },
+    "scopes": {
+      "value": []
+    },
+    "inferenceAPIVersion": {
+      "value": "2024-02-01"
+    },
+    "deploymentInPath": {
+      "value": "true"
+    }
+  }
+}
