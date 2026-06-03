@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "swedencentral"
+    },
+    "hubResourceGroupName": {
+      "value": "rg-foundry-hubswe"
+    },
+    "foundryName": {
+      "value": "fdry-sbx-aialexyo"
+    },
+    "projectName": {
+      "value": "sbx-project-01yo"
+    },
+    "storageAccountName": {
+      "value": "stfdrysbxyo001"
+    },
+    "appInsightsName": {
+      "value": "appi-foundry-sbx-yo"
+    },
+    "keyVaultName": {
+      "value": "kv-foundry-connswedennew"
+    },
+    "subscriptionKey": {
+      "value": "ec97a15bf63d4853ac784a15bb041830"
+    },
+    "secretName": {
+      "value": "apim-subscription-key"
+    }
+  }
+}
