@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "swedencentral"
+    },
+    "foundryName": {
+      "value": "fdry-dev-placeholder"
+    },
+    "projectName": {
+      "value": "project-dev-placeholder"
+    },
+    "storageAccountName": {
+      "value": "stdevplaceholder001"
+    },
+    "appInsightsName": {
+      "value": "appi-dev-placeholder"
+    },
+    "keyVaultName": {
+      "value": "kv-dev-placeholder"
+    },
+    "subscriptionKey": {
+      "value": ""
+    },
+    "secretName": {
+      "value": "apim-subscription-key"
+    },
+    "modelGatewayTargetUrl": {
+      "value": ""
+    },
+    "modelGatewayName": {
+      "value": "GatewayApi"
+    },
+    "modelGatewayAuthType": {
+      "value": "ApiKey"
+    },
+    "modelGatewayApiKey": {
+      "value": ""
+    },
+    "clientId": {
+      "value": ""
+    },
+    "clientSecret": {
+      "value": ""
+    },
+    "tokenUrl": {
+      "value": ""
+    },
+    "scopes": {
+      "value": []
+    },
+    "inferenceAPIVersion": {
+      "value": "2024-02-01"
+    },
+    "deploymentInPath": {
+      "value": "true"
+    }
+  }
+}

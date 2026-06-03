@@ -1,14 +1,35 @@
 targetScope = 'subscription'
 
-param location string = 'uksouth'
+param location string = 'swedencentral'
 param hubResourceGroupName string = 'rg-foundry-hub'
-param foundryName string = 'fdry-sbx-ai'
+@minLength(2)
+@maxLength(64)
+param foundryName string = 'fdrysbxai'
 param projectName string = 'sbx-project-01'
+@minLength(3)
+@maxLength(24)
+param storageAccountName string = 'stfdrysbxai001'
+param appInsightsName string = 'appi-foundry-sbx'
 param keyVaultName string = 'kv-foundry-sbx'
-param apimName string
 @secure()
 param subscriptionKey string
 param secretName string = 'apim-subscription-key'
+
+// Model Gateway connection parameters (optional)
+param modelGatewayTargetUrl string = ''
+param modelGatewayName string = 'GatewayApi'
+@allowed(['ApiKey', 'OAuth2'])
+param modelGatewayAuthType string = 'ApiKey'
+@secure()
+param modelGatewayApiKey string = ''
+param clientId string = ''
+@secure()
+param clientSecret string = ''
+param tokenUrl string = ''
+param scopes array = []
+param inferenceAPIVersion string = '2024-02-01'
+@allowed(['true', 'false'])
+param deploymentInPath string = 'true'
 
 // Central hub resource group
 resource hubRg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
@@ -16,37 +37,41 @@ resource hubRg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   location: location
 }
 
-// Deploy hub resources to central resource group
-module hubResources 'modules/hub.bicep' = {
+module foundryStack 'modules/foundry-stack.bicep' = {
+  name: 'foundry-stack-deployment'
   scope: hubRg
-  name: 'hub-deployment'
   params: {
     location: location
-    foundryName: foundryName  }
-}
-
-// Deploy project resources to hub resource group (projects must be in same RG as AI Services)
-module projectResources 'modules/project.bicep' = {
-  scope: hubRg
-  name: 'project-deployment'
-  params: {
-    location: location
+    foundryName: foundryName
     projectName: projectName
-    foundryAccountName: foundryName
-      keyVaultName: keyVaultName
-    apimName: apimName
+    storageAccountName: storageAccountName
+    appInsightsName: appInsightsName
+    keyVaultName: keyVaultName
     subscriptionKey: subscriptionKey
     secretName: secretName
+    modelGatewayTargetUrl: modelGatewayTargetUrl
+    modelGatewayName: modelGatewayName
+    modelGatewayAuthType: modelGatewayAuthType
+    modelGatewayApiKey: modelGatewayApiKey
+    clientId: clientId
+    clientSecret: clientSecret
+    tokenUrl: tokenUrl
+    scopes: scopes
+    inferenceAPIVersion: inferenceAPIVersion
+    deploymentInPath: deploymentInPath
   }
-  dependsOn: [
-    hubResources
-  ]
 }
 
-
-output foundryName string = hubResources.outputs.foundryName
-output projectName string = projectResources.outputs.projectName
-output projectId string = projectResources.outputs.projectId
-output keyVaultName string = projectResources.outputs.keyVaultName
+output resourceGroupName string = hubRg.name
+output foundryName string = foundryStack.outputs.foundryName
+output foundryId string = foundryStack.outputs.foundryId
+output projectName string = foundryStack.outputs.projectName
+output projectId string = foundryStack.outputs.projectId
+output storageAccountName string = foundryStack.outputs.storageAccountName
+output appInsightsName string = foundryStack.outputs.appInsightsName
+output keyVaultName string = foundryStack.outputs.keyVaultName
+output keyVaultSecretUri string = foundryStack.outputs.keyVaultSecretUri
+output modelGatewayConnectionName string = foundryStack.outputs.modelGatewayConnectionName
+output modelGatewayConnectionId string = foundryStack.outputs.modelGatewayConnectionId
 
 

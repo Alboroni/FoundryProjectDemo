@@ -1,0 +1,70 @@
+trigger:
+- Updatefoundry
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  azureServiceConnection: 'YOUR-AZURE-SERVICE-CONNECTION'
+  resourceGroupName: 'rg-foundry-existing-dev'
+  location: 'swedencentral'
+  deploymentName: 'foundry-stack-$(Build.BuildId)'
+  templateFile: '.src/bicep/modules/foundry-stack.bicep'
+  parametersFile: '.src/bicep/foundry-stack.bicepparam'
+
+stages:
+- stage: WhatIf
+  displayName: What-If Validation
+  jobs:
+  - job: WhatIf
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Run what-if against existing resource group
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -euo pipefail
+
+          az deployment group what-if \
+            --resource-group "$(resourceGroupName)" \
+            --name "$(deploymentName)-whatif" \
+            --template-file "$(templateFile)" \
+            --parameters "$(parametersFile)" \
+            --parameters location="$(location)" \
+            --parameters subscriptionKey="$(subscriptionKey)" \
+            --parameters modelGatewayApiKey="$(modelGatewayApiKey)" \
+            --parameters clientSecret="$(clientSecret)"
+
+- stage: Deploy
+  displayName: Deploy
+  dependsOn: WhatIf
+  condition: succeeded()
+  jobs:
+  - job: Deploy
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Deploy Bicep to existing resource group
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -euo pipefail
+
+          az deployment group create \
+            --resource-group "$(resourceGroupName)" \
+            --name "$(deploymentName)" \
+            --template-file "$(templateFile)" \
+            --parameters "$(parametersFile)" \
+            --parameters location="$(location)" \
+            --parameters subscriptionKey="$(subscriptionKey)" \
+            --parameters modelGatewayApiKey="$(modelGatewayApiKey)" \
+            --parameters clientSecret="$(clientSecret)"
